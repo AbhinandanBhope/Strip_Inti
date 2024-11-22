@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<title>Stripe Payment Demo</title>
+<body>
+    <h3>Welcome to Payment Gateway</h3>
+    <button id="checkout-button">Pay Now</button>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Initialize Stripe with your publishable key
+        const stripe = Stripe('');
+
+        document.getElementById('checkout-button').addEventListener('click', async () => {
+            // Call the server to create a Checkout Session
+            const response = await fetch("/payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ amount: 25000 }) // Optionally include other payment details
+            });
+
+            const session = await response.json();
+
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({ sessionId: session.id });
+            if (result.error) {
+                // If `redirectToCheckout` fails due to a browser or network issue
+                alert(result.error.message);
+            }
+        });
+    </script>
+</body>
+</html>
